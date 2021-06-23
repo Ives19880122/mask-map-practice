@@ -6,7 +6,9 @@ export default createStore({
         currDistrict: '北投區',
         location: [],
         stores: [],
-        keywords: ''
+        keywords: '',
+        showModal: false,
+        infoBoxSid: null,
     },
     getters: {
         cityList(state) {
@@ -37,6 +39,12 @@ export default createStore({
         },
         setKeywords(state, payload) {
             state.keywords = payload
+        },
+        setShowModal(state, payload) {
+            state.showModal = payload
+        },
+        setInfoBoxSid(state, payload) {
+            state.infoBoxSid = payload
         }
     },
     actions: {
