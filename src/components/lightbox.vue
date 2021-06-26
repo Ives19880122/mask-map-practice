@@ -1,7 +1,7 @@
 <template>
   <transition name="modal">
     <div class="modal-mask" v-show="showModal">
-      <div class="modal-wrapper">
+      <div class="modal-wrapper" @click="close">
         <div class="modal-container">
           <div class="modal-body" v-if="currStore">
             <!-- 內容放這裡 -->
@@ -64,7 +64,7 @@ export default {
         return this.$store.state.showModal;
       },
       set(value) {
-        this.$store.commit('setshowModal', value);
+        this.$store.commit('setShowModal', value);
       },
     },
     infoBoxSid: {
