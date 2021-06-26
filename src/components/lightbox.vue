@@ -1,7 +1,7 @@
 <template>
   <transition name="modal">
     <div class="modal-mask" v-show="showModal">
-      <div class="modal-wrapper">
+      <div class="modal-wrapper" @click.self="close">
         <div class="modal-container">
           <div class="modal-body" v-if="currStore">
             <!-- 內容放這裡 -->
@@ -56,27 +56,21 @@
 </template>
 
 <script>
+import { inject, computed, toRefs } from 'vue'
+
 export default {
   name: 'Lightbox',
-  computed: {
-    showModal: {
-      get() {
-        return this.$store.state.showModal;
-      },
-      set(value) {
-        this.$store.commit('setshowModal', value);
-      },
-    },
-    infoBoxSid: {
-      get() {
-        return this.$store.state.infoBoxSid;
-      },
-      set(value) {
-        this.$store.commit('setInfoBoxSid', value);
-      },
-    },
-    servicePeriods() {
-      let servicePeriods = this?.currStore?.['service_periods'] || ''
+  setup() {
+    const mapStore = inject('mapStore')
+    const { state } = mapStore
+
+    // currState 與 servicePeriods 未共用,不用抽取
+    const currStore = computed(() => {
+      return state.stores.filter((d) => d.id === state.infoBoxSid)[0]
+    })
+
+    const servicePeriods = computed(() => {
+      let servicePeriods = state.currStore.value?.['service_periods'] || ''
       servicePeriods = servicePeriods.replace(/N/g, 'O').replace(/Y/g, 'X')
       return servicePeriods
         ? [
@@ -84,15 +78,16 @@ export default {
           servicePeriods.slice(7, 14).split(''),
           servicePeriods.slice(14, 21).split('')]
         : servicePeriods
-    },
-    currStore() {
-      return this.$store.state.stores.filter((d) => d.id === this.infoBoxSid)[0]
+    })
+
+    const close = () => { state.showModal = false }
+
+    return {
+      ...toRefs(state),
+      currStore,
+      servicePeriods,
+      close
     }
-  },
-  methods: {
-    close() {
-      this.showModal = false;
-    },
   },
 };
 </script>

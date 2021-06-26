@@ -25,7 +25,7 @@
         class="store-info wraps"
         v-for="s in filteredStores"
         :key="s.id"
-        @click="$emit('triggerMarkerPopup', s.id)"
+        @click="triggerPopup(s.id)"
       >
         <h1 v-html="keywordHighlight(s.name)"></h1>
 
@@ -51,68 +51,39 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { toRefs, inject, watch } from 'vue'
 export default {
   name: 'asideMenu',
-  computed: {
-    currCity: {
-      get() {
-        return this.$store.state.currCity
-      },
-      set(value) {
-        this.$store.commit('setCurrCity', value)
-      }
-    },
-    currDistrict: {
-      get() {
-        return this.$store.state.currDistrict
-      },
-      set(value) {
-        this.$store.commit('setCurrDistrict', value)
-      }
-    },
-    keywords: {
-      get() {
-        return this.$store.state.keywords
-      },
-      set(value) {
-        this.$store.commit('setKeywords', value)
-      }
-    },
-    showModal: {
-      get() {
-        return this.$store.state.showModal
-      },
-      set(value) {
-        this.$store.commit('setShowModal', value)
-      }
-    },
-    infoBoxSid: {
-      get() {
-        return this.$store.state.infoBoxSid;
-      },
-      set(value) {
-        this.$store.commit('setInfoBoxSid', value);
-      },
-    },
-    ...mapGetters(['cityList', 'districtList', 'filteredStores']),
-  },
-  watch: {
-    districtList(v) {
+  setup() {
+    // inject取得@/composition/store資料
+    const mapStore = inject('mapStore')
+    const map = inject('map')
+
+    const { triggerPopup } = map
+    const { state } = mapStore
+
+    // methods
+    const keywordHighlight = (val) => {
+      return val.replace(new RegExp(state.keywords, 'g'), `<span class="highlight">${state.keywords}</span>`)
+    }
+    const openInfoBox = (sid) => {
+      state.showModal = true
+      state.infoBoxSid = sid
+    }
+    // watch! 注意物件資料要透過函式回傳
+    watch(() => (state.districtList), v => {
       // 解構取第一筆資料
       const [arr] = v
-      this.currDistrict = arr.name
+      state.currDistrict = arr.name
+    })
+
+    return {
+      ...toRefs(state),
+      triggerPopup,
+      openInfoBox,
+      keywordHighlight
     }
   },
-  methods: {
-    keywordHighlight(val) {
-      return val.replace(new RegExp(this.keywords, 'g'), `<span class="highlight">${this.keywords}</span>`)
-    },
-    openInfoBox(sid) {
-      this.showModal = true
-      this.infoBoxSid = sid
-    }
-  }
 }
 </script>
 
