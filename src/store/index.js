@@ -22,6 +22,12 @@ export default createStore({
             return state.keywords
                 ? stores.filter((d) => d.name.includes(state.keywords))
                 : stores.filter((d) => d.county === state.currCity && d.town === state.currDistrict)
+        },
+        /**
+         * 目前行政區資訊
+         */
+        currDistrictInfo(state, getters) {
+            return getters.districtList.find((d) => d.name === state.currDistrict) || {}
         }
     },
     mutations: {

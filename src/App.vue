@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <!-- aside-menu 左側欄 -->
-    <asideMenu />
+    <asideMenu @triggerMarkerPopup="openPopup" ref="menu" />
     <!-- 地圖區塊 -->
-    <maskMap />
+    <maskMap ref="map" />
     <lightbox />
   </div>
 </template>
@@ -21,7 +21,10 @@ export default {
     maskMap
   },
   methods: {
-    ...mapActions(['fetchLocations', 'fetchPharmacies'])
+    ...mapActions(['fetchLocations', 'fetchPharmacies']),
+    openPopup(id) {
+      this.$refs.map.triggerPopup(id)
+    }
   },
   mounted() {
     this.fetchLocations()
